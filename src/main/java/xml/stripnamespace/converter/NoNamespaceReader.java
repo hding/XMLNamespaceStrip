@@ -6,6 +6,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.util.StreamReaderDelegate;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -15,13 +16,12 @@ public class NoNamespaceReader extends StreamReaderDelegate {
     private List<Class> xmlElements = new ArrayList<>();
 
     public void setXmlElements(Class... classes) {
-        for (Class cl : classes) {
-            xmlElements.add(cl);
-        }
+        Collections.addAll(xmlElements, classes);
     }
 
     /**
-     * Constructor     * @param reader XML Stream Reader
+     * Constructor
+     * @param reader XML Stream Reader
      */
     private NoNamespaceReader(XMLStreamReader reader) {
         super(reader);

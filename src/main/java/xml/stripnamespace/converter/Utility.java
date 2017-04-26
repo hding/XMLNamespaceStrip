@@ -1,6 +1,5 @@
 package xml.stripnamespace.converter;
 
-import org.omg.CORBA.SystemException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
