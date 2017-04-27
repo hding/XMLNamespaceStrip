@@ -1,3 +1,8 @@
-# XMLNamespaceStrip
+# JAXB XML object marshalling and unmarshalling without namespace
 
-If you are doing marshal and unmarshal from xml to jaxb element without namespace in xml file
+
+JAXB objects created from a schema with namespaces while xml requires no namespace when marshalling and unmarshalling.
+
+
+
+It requires JAVA 8
