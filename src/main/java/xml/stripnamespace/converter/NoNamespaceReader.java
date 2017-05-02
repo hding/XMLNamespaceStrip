@@ -14,6 +14,7 @@ import java.util.List;
  */
 public class NoNamespaceReader extends StreamReaderDelegate {
     private List<Class> xmlElements = new ArrayList<>();
+    private Stack<String> parent = new Stack<>();
 
     public void setXmlElements(Class... classes) {
         Collections.addAll(xmlElements, classes);
@@ -27,6 +28,9 @@ public class NoNamespaceReader extends StreamReaderDelegate {
         super(reader);
     }
 
+ @Overridepublic int next() {    try {        int event = super.next();        if (event == XMLEvent.START_ELEMENT) {            parent.push(getLocalName());        }        if (event == XMLEvent.END_ELEMENT) {            parent.pop();        }        return event;    } catch (XMLStreamException e) {    }    return 0;}
+   
+    
     @Override
     public String getNamespaceURI() {
         return QNameHelper.getInstance(xmlElements).getNamespace(getLocalName());
