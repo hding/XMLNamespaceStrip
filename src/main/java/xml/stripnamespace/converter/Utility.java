@@ -7,7 +7,7 @@ import javax.xml.bind.Unmarshaller;
 import java.io.*;
 
 /**
- * Hello world!
+ * Utility class
  */
 public class Utility {
 
@@ -46,6 +46,5 @@ public class Utility {
             throw new RuntimeException(ex.getMessage(), ex);
         }
     }
-
 
 }

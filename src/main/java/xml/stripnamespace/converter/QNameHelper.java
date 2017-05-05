@@ -10,6 +10,8 @@ import java.lang.reflect.ParameterizedType;
 import java.util.*;
 
 /**
+ * This is the helper class which can find the qname from local name based on XML element
+ *
  * @author helen ding on 26/04/2017.
  */
 public class QNameHelper {
@@ -36,7 +38,7 @@ public class QNameHelper {
 
     private QNameHelper(List<Class> xmlElements) {
         for (Class cl : xmlElements) {
-            parse(cl);
+            parse(cl, "");
         }
     }
 
@@ -47,7 +49,49 @@ public class QNameHelper {
         return instance;
     }
 
-/** * Parse the XML element namespace * @param cl the XML element class * @param parentNames    the parent tag name list */private void parse(Class cl, String parentNames) {    if (cl == null) {        return;    }    Annotation annotation = cl.getDeclaredAnnotation(XmlRootElement.class);    if (annotation != null) {        parentNames += SPLIT + ((XmlRootElement)annotation).name();        namespace.put(parentNames, ((XmlRootElement)annotation).namespace());    }    if (isPrimitiveOrWrapper(cl)) {        return;    }    for (Field field : cl.getDeclaredFields()) {        try {            Annotation fieldAnnotation = field.getDeclaredAnnotation(XmlElement.class);            if (fieldAnnotation != null) {                String localNames = parentNames + SPLIT + ((XmlElement)fieldAnnotation).name();                namespace.put(localNames, ((XmlElement)fieldAnnotation).namespace());                Class fieldDeclaringClass = field.getType();                if (isPrimitiveOrWrapper(fieldDeclaringClass)) {                    continue;                }                if (fieldDeclaringClass.isAssignableFrom(List.class)) {                    ParameterizedType stringListType = (ParameterizedType)field.getGenericType();                    Class<?> fieldActClass = (Class<?>)stringListType.getActualTypeArguments()[0];                    parse(fieldActClass, localNames);                } else {                    parse(fieldDeclaringClass, localNames);                }            }        } catch (Exception e) {            error.log("CrimTracResponseQNameHelper error:" + e.getMessage());        }    }}
+    /**
+     * Parse the XML element namespace
+     *
+     * @param cl          the XML element class
+     * @param parentNames the parent tag name list
+     */
+    private void parse(Class cl, String parentNames) {
+        if (cl == null) {
+            return;
+        }
+        Annotation annotation = cl.getDeclaredAnnotation(XmlRootElement.class);
+        if (annotation != null) {
+            parentNames += SPLIT + ((XmlRootElement) annotation).name();
+            namespace.put(parentNames, ((XmlRootElement) annotation).namespace());
+        }
+        if (isPrimitiveOrWrapper(cl)) {
+            return;
+        }
+        for (Field field : cl.getDeclaredFields()) {
+            try {
+                Annotation fieldAnnotation = field.getDeclaredAnnotation(XmlElement.class);
+                if (fieldAnnotation != null) {
+                    String localNames = parentNames + SPLIT + ((XmlElement) fieldAnnotation).name();
+                    namespace.put(localNames, ((XmlElement) fieldAnnotation).namespace());
+                    Class fieldDeclaringClass = field.getType();
+                    if (isPrimitiveOrWrapper(fieldDeclaringClass)) {
+                        continue;
+                    }
+                    if (fieldDeclaringClass.isAssignableFrom(List.class)) {
+                        ParameterizedType stringListType = (ParameterizedType) field.getGenericType();
+                        Class<?> fieldActClass = (Class<?>) stringListType.getActualTypeArguments()[0];
+                        parse(fieldActClass, localNames);
+                    } else {
+                        parse(fieldDeclaringClass, localNames);
+                    }
+                }
+            } catch (Exception e) {
+                //log the error
+            }
+        }
+    }
+
+
     private boolean isPrimitiveOrWrapper(Class cl) {
         if (cl.isPrimitive()) {
             return true;
